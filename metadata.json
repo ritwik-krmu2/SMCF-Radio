@@ -1,0 +1,6 @@
+{
+  "name": "SMCF Radio",
+  "description": "Student-run campus radio station web application with live player, scheduler, student interactive portal, and broadcaster console.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

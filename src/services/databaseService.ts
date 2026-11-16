@@ -248,13 +248,15 @@ export const databaseService = {
   getRJs(): RJ[] {
     const rjs = getFromStorage<RJ[]>(STORAGE_KEYS.RJS, RJS);
     return rjs.map((r) => {
-      if (r.driveUrl && (!r.audioUrl || r.audioUrl.startsWith('/audio/'))) {
-        return {
-          ...r,
-          audioUrl: getMediaAudioUrl({ audioUrl: r.audioUrl, driveUrl: r.driveUrl }) || r.audioUrl,
-        };
-      }
-      return r;
+      const defaultRj = RJS.find((dr) => dr.id === r.id);
+      const resolvedAudio = getMediaAudioUrl({
+        audioUrl: r.audioUrl || defaultRj?.audioUrl,
+        driveUrl: r.driveUrl || defaultRj?.driveUrl,
+      });
+      return {
+        ...r,
+        audioUrl: resolvedAudio || r.audioUrl || defaultRj?.audioUrl || '',
+      };
     });
   },
 

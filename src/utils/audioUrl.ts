@@ -14,19 +14,43 @@
  */
 
 export const KNOWN_STATIC_RECORDINGS: Record<string, string> = {
-  // Official Launch & Station Promo (Gulam & Priya)
+  // 1. Official Launch & Station Promo (Gulam & Priya)
   '1kxDyeFzjPLU6wgOGdTVQolE-kAPmYl8m': '/audio/live_smcf_promo_gulam.mp3',
-  // Career Talks Photography (Disha)
+  // 2. Career Talks Photography (Disha)
   '1xyVbDt044-i6u1ZzugYkQAMB5ezp3g8y': '/audio/career_talks_disha.mp3',
-  // Masti Unlimited (Anjali & Laxita)
-  '11xRckI_gaMG1GFCmIWYnTNhRBfU_sFe9': '/audio/mastitime_anjali_laxita.mp3',
-  // 5 Film Review Gandhari (Ronit)
+  // 3. Gyantime Social Media (Anjali & Laxita)
+  '1lGvbQStjXX0Mjr817YXwyLwJh8y5_h9g': '/audio/gyantime_social_media_anjali_laxita.mp3',
+  // 4. Gyantime Personality Development (Diva)
+  '19KrXRCnHVpZDq5W_mUPLg8FBMRoteRVZ': '/audio/gyantime_personality_development_diva.mp3',
+  // 5. Film Review Gandhari (Ronit)
   '1HSvmXhtplfT2E7S1I-DeBvC0gsid4Wgm': '/audio/film_review.wav',
-  // Sports Talk Taekwondo (Shipra)
+  // 6. Masti Unlimited (Anjali & Laxita)
+  '11xRckI_gaMG1GFCmIWYnTNhRBfU_sFe9': '/audio/mastitime_anjali_laxita.mp3',
+  // 7. Film Review The VIBE (Ronit)
+  '1PUOLjm5R662VICd3oUOhdM6_x6_1q1m0': '/audio/film_review_the_vibe_ronit.mp3',
+  // 8. Film Review The Adom Project (Ronit)
+  '1EL8bpxp5Nx7F21cgsssO1pzq53Ocoie3': '/audio/film_review_the_adom_project_ronit.mp3',
+  // 9. Film Review The VAAN (Ronit)
+  '1Dxfc8DnymQU9tTCRbNcyiVBut0vrxoMV': '/audio/film_review_the_vaan_ronit.mp3',
+  // 10. Radio Rangmanch Episode 1 (Disha)
+  '15W3tfb3cLr_bfso443CQK6vOPvHc3sIR': '/audio/radio_rangmanch_ep1_disha.mp3',
+  // 11. Podcast Aditya & Kumkum
+  '1w0a4l8MlFdQYX0IapQ7HNlw43lun0yJ4': '/audio/podcast_aditya_kumkum.mp3',
+  // 12. Sports Talk Taekwondo (Shipra)
   '18nCg3rEbGlU6AKTZFBuA0lTKU8J0Krir': '/audio/rj_ananya.wav',
-  // Music Show Aman Rapper (Shipra)
+  // 13. Career Connect Episode 1 (Sadiya)
+  '1eGgCVyRotymAhhW0cljrMsEXnouiT_ka': '/audio/career_connect_ep1_sadiya.mp3',
+  // 14. Career Connect Episode 3 (Rishi)
+  '1rGWwYSFI-b17HhkomChqvTPz5akb9_43': '/audio/career_connect_ep3_rishi.mp3',
+  // 15. Career Talks Journalism (Shivam)
+  '1PQTwU37R-MUoViIaNLQoBNsBIVewrVmH': '/audio/career_talks_journalism_shivam.mp3',
+  // 16. Career Talks French (Diva)
+  '14RhKWr-wwR6Kd3JdYwZ-BFI79QdeRbRl': '/audio/career_talks_french_diva.mp3',
+  // 17. Music Show Aman Rapper (Shipra)
   '1koOLVp-GuKj-mXfs2WbroQwBvg6E62qN': '/audio/mastitime_anjali_laxita.mp3',
-  // Career Connect Episode 2 (RJ Sadiya)
+  // 18. Podcast Ghana Delegation (Sakshi)
+  '193Y0Iyx4lXRVtAUqndBdxPQ9tt4jbyRu': '/audio/podcast_ghana_delegation_sakshi.mp3',
+  // 19. Career Connect Episode 2 (Sadiya)
   '15djwUd4CUSJ_MhpL74DIOzR6lRzg1-Fq': '/audio/career_talk.wav',
 };
 
@@ -61,7 +85,7 @@ export function formatAudioUrl(url: string | undefined | null): string {
     if (KNOWN_STATIC_RECORDINGS[fileId]) {
       return KNOWN_STATIC_RECORDINGS[fileId];
     }
-    return `https://drive.usercontent.google.com/download?id=${fileId}&export=download`;
+    return `/api/drive-stream?id=${fileId}`;
   }
 
   return trimmed;

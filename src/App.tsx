@@ -224,6 +224,16 @@ export default function App() {
   const handleAudioError = () => {
     console.warn('[SMCF Audio] Audio playback error on src:', audioSrc);
     setIsLoading(false);
+
+    // If current source is a remote Google Drive URL or streaming proxy that failed, fallback to high-fidelity station broadcast audio
+    if (audioSrc && (audioSrc.includes('drive.usercontent.google.com') || audioSrc.includes('/api/drive-stream') || audioSrc.includes('google.com')) && audioSrc !== STREAM_URL) {
+      console.info('[SMCF Audio] Falling back to high-fidelity station broadcast audio...');
+      setAudioSrc('/audio/live_smcf_promo_gulam.mp3');
+      setErrorMessage(null);
+      setIsLoading(true);
+      return;
+    }
+
     setErrorMessage('Network error');
   };
 

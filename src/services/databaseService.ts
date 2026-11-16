@@ -112,14 +112,14 @@ export const databaseService = {
     return progs.map((p) => {
       const defaultProg = PROGRAMS.find((dp) => dp.id === p.id);
       const plays = Math.max(p.plays ?? 0, defaultProg?.plays ?? 0);
-      let audioUrl = p.audioUrl;
-      if (p.driveUrl && (!audioUrl || audioUrl.startsWith('/audio/'))) {
-        audioUrl = getMediaAudioUrl({ audioUrl: p.audioUrl, driveUrl: p.driveUrl }) || audioUrl;
-      }
+      const resolvedAudio = getMediaAudioUrl({
+        audioUrl: p.audioUrl || defaultProg?.audioUrl,
+        driveUrl: p.driveUrl || defaultProg?.driveUrl,
+      });
       return {
         ...p,
         plays,
-        audioUrl,
+        audioUrl: resolvedAudio || p.audioUrl || defaultProg?.audioUrl || '',
       };
     });
   },
@@ -248,13 +248,15 @@ export const databaseService = {
   getRJs(): RJ[] {
     const rjs = getFromStorage<RJ[]>(STORAGE_KEYS.RJS, RJS);
     return rjs.map((r) => {
-      if (r.driveUrl && (!r.audioUrl || r.audioUrl.startsWith('/audio/'))) {
-        return {
-          ...r,
-          audioUrl: getMediaAudioUrl({ audioUrl: r.audioUrl, driveUrl: r.driveUrl }) || r.audioUrl,
-        };
-      }
-      return r;
+      const defaultRj = RJS.find((dr) => dr.id === r.id);
+      const resolvedAudio = getMediaAudioUrl({
+        audioUrl: r.audioUrl || defaultRj?.audioUrl,
+        driveUrl: r.driveUrl || defaultRj?.driveUrl,
+      });
+      return {
+        ...r,
+        audioUrl: resolvedAudio || r.audioUrl || defaultRj?.audioUrl || '',
+      };
     });
   },
 

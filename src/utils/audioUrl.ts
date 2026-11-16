@@ -14,20 +14,28 @@
  */
 
 export const KNOWN_STATIC_RECORDINGS: Record<string, string> = {
-  // User's added Google Drive recording (Career Talks Photography Disha)
-  '1xyVbDt044-i6u1ZzugYkQAMB5ezp3g8y': '/audio/career_talks_disha.mp3',
   // Official Launch & Station Promo (Gulam & Priya)
   '1kxDyeFzjPLU6wgOGdTVQolE-kAPmYl8m': '/audio/live_smcf_promo_gulam.mp3',
+  // Career Talks Photography (Disha)
+  '1xyVbDt044-i6u1ZzugYkQAMB5ezp3g8y': '/audio/career_talks_disha.mp3',
   // Masti Unlimited (Anjali & Laxita)
   '11xRckI_gaMG1GFCmIWYnTNhRBfU_sFe9': '/audio/mastitime_anjali_laxita.mp3',
+  // 5 Film Review Gandhari (Ronit)
+  '1HSvmXhtplfT2E7S1I-DeBvC0gsid4Wgm': '/audio/film_review.wav',
+  // Sports Talk Taekwondo (Shipra)
+  '18nCg3rEbGlU6AKTZFBuA0lTKU8J0Krir': '/audio/rj_ananya.wav',
+  // Music Show Aman Rapper (Shipra)
+  '1koOLVp-GuKj-mXfs2WbroQwBvg6E62qN': '/audio/mastitime_anjali_laxita.mp3',
+  // Career Connect Episode 2 (RJ Sadiya)
+  '15djwUd4CUSJ_MhpL74DIOzR6lRzg1-Fq': '/audio/career_talk.wav',
 };
 
 export function extractGoogleDriveId(url: string | undefined | null): string | null {
   if (!url) return null;
   const trimmed = url.trim();
 
-  // 1. Check standard Google Drive URLs
-  const driveRegex = /(?:drive\.google\.com\/(?:file\/d\/|(?:open|uc)\?(?:[a-zA-Z0-9_=&-]*\b)?id=)|docs\.google\.com\/(?:file\/d\/|(?:open|uc)\?(?:[a-zA-Z0-9_=&-]*\b)?id=)|drive\.usercontent\.google\.com\/download\?(?:[a-zA-Z0-9_=&-]*\b)?id=)([a-zA-Z0-9_-]+)/;
+  // 1. Check standard Google Drive URLs or local stream proxy URLs
+  const driveRegex = /(?:drive\.google\.com\/(?:file\/d\/|(?:open|uc)\?(?:[a-zA-Z0-9_=&-]*\b)?id=)|docs\.google\.com\/(?:file\/d\/|(?:open|uc)\?(?:[a-zA-Z0-9_=&-]*\b)?id=)|drive\.usercontent\.google\.com\/download\?(?:[a-zA-Z0-9_=&-]*\b)?id=|\/api\/drive-stream\?(?:[a-zA-Z0-9_=&-]*\b)?id=)([a-zA-Z0-9_-]+)/;
   const match = trimmed.match(driveRegex);
   if (match && match[1]) return match[1];
 
@@ -40,9 +48,9 @@ export function extractGoogleDriveId(url: string | undefined | null): string | n
 }
 
 /**
- * Converts any Google Drive link or file ID to a streaming audio URL.
+ * Converts any Google Drive link or file ID to a direct streaming audio URL.
  * Maps known files to the high-performance local audio copy, and streams any other
- * Google Drive file through the `/api/drive-stream` proxy endpoint.
+ * Google Drive file through Google CDN direct usercontent streaming with full range request support.
  */
 export function formatAudioUrl(url: string | undefined | null): string {
   if (!url) return '';
@@ -53,7 +61,7 @@ export function formatAudioUrl(url: string | undefined | null): string {
     if (KNOWN_STATIC_RECORDINGS[fileId]) {
       return KNOWN_STATIC_RECORDINGS[fileId];
     }
-    return `/api/drive-stream?id=${fileId}`;
+    return `https://drive.usercontent.google.com/download?id=${fileId}&export=download`;
   }
 
   return trimmed;

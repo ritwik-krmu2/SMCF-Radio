@@ -28,9 +28,9 @@ describe('Audio URL Utilities', () => {
     expect(formatAudioUrl(url)).toBe('/audio/career_talks_disha.mp3');
   });
 
-  it('formats unknown Google Drive link to streaming proxy endpoint', () => {
+  it('formats unknown Google Drive link to direct usercontent streaming URL', () => {
     const url = 'https://drive.google.com/file/d/1abcdef1234567890abcdef1234567890/view';
-    expect(formatAudioUrl(url)).toBe('/api/drive-stream?id=1abcdef1234567890abcdef1234567890');
+    expect(formatAudioUrl(url)).toBe('https://drive.usercontent.google.com/download?id=1abcdef1234567890abcdef1234567890&export=download');
   });
 
   it('prioritizes original Google Drive link in getMediaAudioUrl', () => {

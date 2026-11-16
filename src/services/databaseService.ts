@@ -112,14 +112,14 @@ export const databaseService = {
     return progs.map((p) => {
       const defaultProg = PROGRAMS.find((dp) => dp.id === p.id);
       const plays = Math.max(p.plays ?? 0, defaultProg?.plays ?? 0);
-      let audioUrl = p.audioUrl;
-      if (p.driveUrl && (!audioUrl || audioUrl.startsWith('/audio/'))) {
-        audioUrl = getMediaAudioUrl({ audioUrl: p.audioUrl, driveUrl: p.driveUrl }) || audioUrl;
-      }
+      const resolvedAudio = getMediaAudioUrl({
+        audioUrl: p.audioUrl || defaultProg?.audioUrl,
+        driveUrl: p.driveUrl || defaultProg?.driveUrl,
+      });
       return {
         ...p,
         plays,
-        audioUrl,
+        audioUrl: resolvedAudio || p.audioUrl || defaultProg?.audioUrl || '',
       };
     });
   },

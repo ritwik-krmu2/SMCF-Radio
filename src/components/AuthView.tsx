@@ -1,16 +1,19 @@
 import React, { useState } from 'react';
 import { Eye, EyeOff, Lock, Mail, Radio, AlertCircle, CheckCircle2, ArrowRight, ShieldCheck, UserCheck, Sparkles } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import { DEMO_CREDENTIALS } from '../services/authService';
+import { User } from '../types';
 
 interface AuthViewProps {
-  onSuccess?: () => void;
+  onSuccess?: (user?: User) => void;
   defaultTab?: 'login' | 'signup';
 }
 
 export function AuthView({ onSuccess, defaultTab = 'login' }: AuthViewProps) {
   const { login, signup, requestPasswordReset } = useAuth();
   const [tab, setTab] = useState<'login' | 'signup'>(defaultTab);
+
+  // Login category selector
+  const [loginCategory, setLoginCategory] = useState<'student' | 'rj' | 'admin'>('student');
 
   // Login form state
   const [loginEmail, setLoginEmail] = useState('');
@@ -20,7 +23,7 @@ export function AuthView({ onSuccess, defaultTab = 'login' }: AuthViewProps) {
   // Signup form state
   const [signupName, setSignupName] = useState('');
   const [signupEmail, setSignupEmail] = useState('');
-  const [signupDept, setSignupDept] = useState('Computer Science');
+  const [signupDept, setSignupDept] = useState('General Listener / Public');
   const [signupStudentId, setSignupStudentId] = useState('');
   const [signupPassword, setSignupPassword] = useState('');
   const [signupConfirmPassword, setSignupConfirmPassword] = useState('');
@@ -57,9 +60,14 @@ export function AuthView({ onSuccess, defaultTab = 'login' }: AuthViewProps) {
     setIsSubmitting(false);
 
     if (result.success) {
-      setSuccessMsg('Welcome back! Loading your dashboard...');
+      const destination = result.user?.role === 'admin'
+        ? 'Admin Console'
+        : result.user?.role === 'rj'
+        ? 'RJ Studio'
+        : 'Student Portal';
+      setSuccessMsg(`Welcome back, ${result.user?.name || 'Broadcaster'}! Loading your ${destination}...`);
       setTimeout(() => {
-        if (onSuccess) onSuccess();
+        if (onSuccess) onSuccess(result.user);
       }, 500);
     } else {
       setError(result.error || 'Invalid credentials.');
@@ -74,8 +82,8 @@ export function AuthView({ onSuccess, defaultTab = 'login' }: AuthViewProps) {
       setError('Please enter your full name.');
       return;
     }
-    if (!signupEmail.trim() || !signupEmail.includes('@')) {
-      setError('Please provide a valid university email address.');
+    if (!signupEmail.trim() || !signupEmail.includes('@') || !signupEmail.includes('.')) {
+      setError('Please provide a valid email address (e.g. name@gmail.com).');
       return;
     }
     if (signupPassword.length < 6) {
@@ -87,7 +95,7 @@ export function AuthView({ onSuccess, defaultTab = 'login' }: AuthViewProps) {
       return;
     }
     if (!agreeTerms) {
-      setError('Please accept the campus radio community guidelines.');
+      setError('Please accept the radio community guidelines.');
       return;
     }
 
@@ -96,7 +104,7 @@ export function AuthView({ onSuccess, defaultTab = 'login' }: AuthViewProps) {
       name: signupName,
       email: signupEmail,
       department: signupDept,
-      studentId: signupStudentId || undefined,
+      studentId: signupStudentId.trim() || undefined,
       password: signupPassword,
       role: 'student',
       activateSubscription: enrollSubscription,
@@ -104,21 +112,13 @@ export function AuthView({ onSuccess, defaultTab = 'login' }: AuthViewProps) {
     setIsSubmitting(false);
 
     if (result.success) {
-      setSuccessMsg('Account created successfully! Welcome to SMCF Radio.');
+      setSuccessMsg('Listener account created successfully! Welcome to SMCF Radio.');
       setTimeout(() => {
-        if (onSuccess) onSuccess();
+        if (onSuccess) onSuccess(result.user);
       }, 500);
     } else {
       setError(result.error || 'Failed to create account.');
     }
-  };
-
-  const handleQuickDemoLogin = (email: string, pass: string) => {
-    setLoginEmail(email);
-    setLoginPassword(pass);
-    setTab('login');
-    setError(null);
-    setSuccessMsg(`Selected demo credentials for ${email}. Click 'Sign In' below.`);
   };
 
   const handleForgotPassword = async (e: React.FormEvent) => {
@@ -134,14 +134,15 @@ export function AuthView({ onSuccess, defaultTab = 'login' }: AuthViewProps) {
   };
 
   const departments = [
-    'Computer Science',
-    'Humanities & Social Sciences',
-    'Mass Communication & Media',
+    'General Listener / Public',
+    'SGT University Student',
+    'Campus Faculty & Staff',
+    'Media & Mass Communication',
+    'Computer Science & IT',
     'Film Studies & Production',
-    'Electronics & Communication',
-    'Management & Business',
-    'Biotechnology',
-    'Design & Architecture',
+    'Management & Commerce',
+    'Languages & Humanities',
+    'Alumni & Global Radio Fan',
   ];
 
   return (
@@ -154,12 +155,12 @@ export function AuthView({ onSuccess, defaultTab = 'login' }: AuthViewProps) {
           </div>
           <div>
             <h2 className="font-display font-extrabold text-xl tracking-tight text-white">
-              {tab === 'login' ? 'Sign In to SMCF Radio' : 'Create Student Account'}
+              {tab === 'login' ? 'Sign In to SMCF Radio' : 'Create Free Listener Account'}
             </h2>
             <p className="text-[11px] text-slate-400">
               {tab === 'login'
-                ? 'Access student broadcasts, bookmarks & live requests'
-                : 'Join the SGT University broadcasting community'}
+                ? 'Access your radio console, bookmarks & live requests'
+                : 'Open to everyone — students, faculty & global radio listeners'}
             </p>
           </div>
         </div>
@@ -211,22 +212,130 @@ export function AuthView({ onSuccess, defaultTab = 'login' }: AuthViewProps) {
           </div>
         )}
 
+        {/* ROLE PORTAL CATEGORY SELECTOR BUTTONS */}
+        {tab === 'login' && !showForgotPrompt && (
+          <div className="mb-5">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-[10px] uppercase font-bold tracking-wider text-slate-400 font-mono">
+                Select Login Category
+              </span>
+              <span className="text-[10px] text-[#00FF00]/90 font-mono font-semibold">
+                {loginCategory === 'admin'
+                  ? '🛡️ Station Director'
+                  : loginCategory === 'rj'
+                  ? '🎙️ RJ Broadcaster'
+                  : '🎧 Listener / Student'}
+              </span>
+            </div>
+
+            <div className="grid grid-cols-3 gap-1.5 p-1 bg-[#060E06] border border-[#00FF00]/25 rounded-2xl">
+              <button
+                type="button"
+                onClick={() => {
+                  setLoginCategory('student');
+                  clearMessages();
+                }}
+                className={`py-2 px-1 text-center rounded-xl text-xs font-bold transition-all cursor-pointer flex flex-col items-center justify-center gap-0.5 ${
+                  loginCategory === 'student'
+                    ? 'bg-gradient-to-r from-[#00FF00] to-[#10B981] text-slate-950 font-black shadow-md shadow-[#00FF00]/30'
+                    : 'text-slate-300 hover:text-white hover:bg-white/5'
+                }`}
+              >
+                <div className="flex items-center gap-1">
+                  <UserCheck className="w-3.5 h-3.5" />
+                  <span className="truncate">Listener</span>
+                </div>
+                <span className="text-[9px] opacity-75 font-normal">Student / Public</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setLoginCategory('rj');
+                  clearMessages();
+                }}
+                className={`py-2 px-1 text-center rounded-xl text-xs font-bold transition-all cursor-pointer flex flex-col items-center justify-center gap-0.5 ${
+                  loginCategory === 'rj'
+                    ? 'bg-gradient-to-r from-teal-400 to-emerald-400 text-slate-950 font-black shadow-md shadow-teal-400/30'
+                    : 'text-slate-300 hover:text-white hover:bg-white/5'
+                }`}
+              >
+                <div className="flex items-center gap-1">
+                  <Radio className="w-3.5 h-3.5" />
+                  <span className="truncate">RJ Broadcaster</span>
+                </div>
+                <span className="text-[9px] opacity-75 font-normal">RJ ID Portal</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setLoginCategory('admin');
+                  clearMessages();
+                }}
+                className={`py-2 px-1 text-center rounded-xl text-xs font-bold transition-all cursor-pointer flex flex-col items-center justify-center gap-0.5 ${
+                  loginCategory === 'admin'
+                    ? 'bg-gradient-to-r from-emerald-500 to-green-600 text-white font-black shadow-md shadow-emerald-500/30'
+                    : 'text-slate-300 hover:text-white hover:bg-white/5'
+                }`}
+              >
+                <div className="flex items-center gap-1">
+                  <ShieldCheck className="w-3.5 h-3.5" />
+                  <span className="truncate">Station Admin</span>
+                </div>
+                <span className="text-[9px] opacity-75 font-normal">Director Portal</span>
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* SIGN IN FORM */}
         {tab === 'login' && !showForgotPrompt && (
           <form onSubmit={handleLoginSubmit} className="space-y-4 text-xs">
             <div>
-              <label className="block text-slate-200 font-semibold mb-1">Email Address</label>
+              <div className="flex items-center justify-between mb-1">
+                <label className="block text-slate-200 font-semibold">
+                  {loginCategory === 'rj'
+                    ? 'Official RJ ID or Broadcaster Email'
+                    : loginCategory === 'admin'
+                    ? 'Station Admin Email'
+                    : 'Email Address'}
+                </label>
+                {loginCategory === 'rj' && (
+                  <span className="text-[10px] text-[#00FF00]/80 font-mono">RJ ID Supported</span>
+                )}
+              </div>
               <div className="relative">
-                <Mail className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+                {loginCategory === 'rj' ? (
+                  <Radio className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-teal-400" />
+                ) : loginCategory === 'admin' ? (
+                  <ShieldCheck className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-emerald-400" />
+                ) : (
+                  <Mail className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+                )}
                 <input
-                  type="email"
+                  type="text"
                   required
-                  placeholder="student@smcf.edu.in"
+                  autoComplete="username"
+                  placeholder={
+                    loginCategory === 'rj'
+                      ? 'e.g. RJ-RONIT, RJ-DIVA or rj.ronit@smcf.edu.in'
+                      : loginCategory === 'admin'
+                      ? 'e.g. admin@smcf.edu.in'
+                      : 'e.g. yourname@gmail.com or student@smcf.edu.in'
+                  }
                   value={loginEmail}
                   onChange={(e) => setLoginEmail(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2.5 rounded-2xl bg-[#060E06] border border-[#00FF00]/25 text-white placeholder-slate-400 focus:outline-none focus:border-[#00FF00]"
+                  className="w-full pl-10 pr-4 py-2.5 rounded-2xl bg-[#060E06] border border-[#00FF00]/25 text-white placeholder-slate-500 focus:outline-none focus:border-[#00FF00]"
                 />
               </div>
+              <p className="text-[10px] text-slate-400 mt-1">
+                {loginCategory === 'rj'
+                  ? 'Broadcasters sign in with their Station Director provisioned RJ ID.'
+                  : loginCategory === 'admin'
+                  ? 'Authorized university broadcast leadership & administrators only.'
+                  : 'Open to registered student listeners and community radio fans.'}
+              </p>
             </div>
 
             <div>
@@ -265,7 +374,15 @@ export function AuthView({ onSuccess, defaultTab = 'login' }: AuthViewProps) {
               disabled={isSubmitting}
               className="w-full py-3 rounded-full bg-gradient-to-r from-[#00FF00] to-[#10B981] hover:from-[#33FF33] hover:to-[#059669] text-slate-950 font-black font-bold text-xs flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-[#00FF00]/30 transition-all disabled:opacity-50"
             >
-              <span>{isSubmitting ? 'Authenticating...' : 'Sign In'}</span>
+              <span>
+                {isSubmitting
+                  ? 'Authenticating...'
+                  : loginCategory === 'admin'
+                  ? 'Sign In to Admin Console'
+                  : loginCategory === 'rj'
+                  ? 'Sign In to RJ Studio'
+                  : 'Sign In to Listener Portal'}
+              </span>
               <ArrowRight className="w-3.5 h-3.5" />
             </button>
           </form>
@@ -304,36 +421,50 @@ export function AuthView({ onSuccess, defaultTab = 'login' }: AuthViewProps) {
           </form>
         )}
 
-        {/* SIGN UP FORM */}
+        {/* SIGN UP FORM (OPEN TO EVERYONE) */}
         {tab === 'signup' && (
           <form onSubmit={handleSignupSubmit} className="space-y-3.5 text-xs">
+            <div className="p-3 rounded-2xl bg-[#060E06] border border-[#00FF00]/25 flex items-start gap-2.5">
+              <Sparkles className="w-4 h-4 text-[#00FF00] shrink-0 mt-0.5" />
+              <div className="text-[11px] text-slate-300 leading-normal">
+                <span className="font-bold text-white block">🌍 Public & Campus Listener Access</span>
+                Registration is 100% free and open to everyone worldwide. Use any personal email (Gmail, Outlook, Yahoo) or university ID.
+              </div>
+            </div>
+
             <div>
               <label className="block text-slate-200 font-semibold mb-1">Full Name *</label>
               <input
                 type="text"
                 required
-                placeholder="e.g. Priya Sharma"
+                placeholder="e.g. Priya Sharma or Alex Johnson"
                 value={signupName}
                 onChange={(e) => setSignupName(e.target.value)}
-                className="w-full px-3.5 py-2.5 rounded-2xl bg-[#060E06] border border-[#00FF00]/25 text-white focus:outline-none focus:border-[#00FF00]"
+                className="w-full px-3.5 py-2.5 rounded-2xl bg-[#060E06] border border-[#00FF00]/25 text-white placeholder-slate-500 focus:outline-none focus:border-[#00FF00]"
               />
             </div>
 
             <div>
-              <label className="block text-slate-200 font-semibold mb-1">University Email Address *</label>
+              <div className="flex items-center justify-between mb-1">
+                <label className="block text-slate-200 font-semibold">Email Address *</label>
+                <span className="text-[10px] text-[#00FF00]/80">Any Email Accepted</span>
+              </div>
               <input
                 type="email"
                 required
-                placeholder="name@smcf.edu.in"
+                placeholder="e.g. yourname@gmail.com, student@smcf.edu.in"
                 value={signupEmail}
                 onChange={(e) => setSignupEmail(e.target.value)}
-                className="w-full px-3.5 py-2.5 rounded-2xl bg-[#060E06] border border-[#00FF00]/25 text-white focus:outline-none focus:border-[#00FF00]"
+                className="w-full px-3.5 py-2.5 rounded-2xl bg-[#060E06] border border-[#00FF00]/25 text-white placeholder-slate-500 focus:outline-none focus:border-[#00FF00]"
               />
+              <p className="text-[10px] text-slate-400 mt-1">
+                Personal Gmail, Outlook, Yahoo, or campus institutional emails are all supported.
+              </p>
             </div>
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-slate-200 font-semibold mb-1">Department</label>
+                <label className="block text-slate-200 font-semibold mb-1">Category / Affiliation</label>
                 <select
                   value={signupDept}
                   onChange={(e) => setSignupDept(e.target.value)}
@@ -348,13 +479,13 @@ export function AuthView({ onSuccess, defaultTab = 'login' }: AuthViewProps) {
               </div>
 
               <div>
-                <label className="block text-slate-200 font-semibold mb-1">Student Roll ID</label>
+                <label className="block text-slate-200 font-semibold mb-1">Student / Roll ID (Optional)</label>
                 <input
                   type="text"
-                  placeholder="2024-CSE-042"
+                  placeholder="e.g. 2024-CSE-042 (or blank)"
                   value={signupStudentId}
                   onChange={(e) => setSignupStudentId(e.target.value)}
-                  className="w-full px-3 py-2.5 rounded-2xl bg-[#060E06] border border-[#00FF00]/25 text-white focus:outline-none focus:border-[#00FF00]"
+                  className="w-full px-3 py-2.5 rounded-2xl bg-[#060E06] border border-[#00FF00]/25 text-white placeholder-slate-500 focus:outline-none focus:border-[#00FF00]"
                 />
               </div>
             </div>
@@ -397,7 +528,7 @@ export function AuthView({ onSuccess, defaultTab = 'login' }: AuthViewProps) {
                 />
                 <label htmlFor="enrollSub" className="text-xs font-bold text-white cursor-pointer flex items-center gap-1.5">
                   <Sparkles className="w-3.5 h-3.5 text-[#00FF00]" />
-                  <span>Activate Free Campus Subscription (Recommended)</span>
+                  <span>Activate Free Listener Pass (Recommended)</span>
                 </label>
               </div>
               <p className="text-[10px] text-slate-300 pl-6 leading-relaxed">
@@ -414,7 +545,7 @@ export function AuthView({ onSuccess, defaultTab = 'login' }: AuthViewProps) {
                 className="rounded accent-emerald-500 cursor-pointer"
               />
               <label htmlFor="terms" className="text-[11px] text-slate-300 cursor-pointer">
-                I agree to the SMCF Radio student broadcast guidelines
+                I agree to the SMCF Radio broadcast and community guidelines
               </label>
             </div>
 
@@ -423,69 +554,16 @@ export function AuthView({ onSuccess, defaultTab = 'login' }: AuthViewProps) {
               disabled={isSubmitting}
               className="w-full py-3 rounded-full bg-gradient-to-r from-[#00FF00] to-[#10B981] hover:from-[#33FF33] hover:to-[#059669] text-slate-950 font-black font-bold text-xs flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-[#00FF00]/30 transition-all disabled:opacity-50"
             >
-              <span>{isSubmitting ? 'Registering...' : 'Create Account'}</span>
+              <span>{isSubmitting ? 'Registering...' : 'Create Free Account'}</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </button>
           </form>
         )}
 
-        {/* Instant Demo Access Options */}
-        <div className="mt-6 pt-5 border-t border-[#00FF00]/20 space-y-2.5">
-          <div className="flex items-center justify-between">
-            <span className="text-[10px] uppercase font-bold tracking-wider text-slate-400 flex items-center gap-1.5">
-              <Sparkles className="w-3 h-3 text-[#00FF00]" />
-              <span>Instant Demo Credentials</span>
-            </span>
-            <span className="text-[9px] text-[#00FF00] font-mono">1-Click Role Fill</span>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
-            {DEMO_CREDENTIALS.map((demo) => (
-              <button
-                key={demo.email}
-                type="button"
-                onClick={() => handleQuickDemoLogin(demo.email, demo.password)}
-                className={`p-2.5 rounded-2xl border text-left transition-all cursor-pointer group ${
-                  loginEmail === demo.email
-                    ? 'bg-[#00FF00]/15 border-[#00FF00] shadow-md shadow-[#00FF00]/20'
-                    : 'bg-[#060E06] hover:bg-[#0E1A0E] border-[#00FF00]/25 hover:border-[#00FF00]/60'
-                }`}
-              >
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-xs font-bold text-white group-hover:text-[#00FF00] truncate">
-                    {demo.role === 'admin'
-                      ? 'Admin'
-                      : demo.role === 'rj'
-                      ? 'RJ Priya'
-                      : demo.subscriptionStatus === 'active'
-                      ? 'Subscriber'
-                      : 'Student'}
-                  </span>
-                  <span
-                    className={`text-[9px] px-1.5 py-0.2 rounded font-bold uppercase shrink-0 ${
-                      demo.role === 'admin'
-                        ? 'bg-rose-950/80 text-rose-300 border border-rose-500/30'
-                        : demo.role === 'rj'
-                        ? 'bg-teal-950/80 text-teal-300 border border-teal-500/30'
-                        : demo.subscriptionStatus === 'active'
-                        ? 'bg-emerald-950/80 text-emerald-300 border border-emerald-500/30'
-                        : 'bg-slate-800 text-slate-300 border border-slate-600/30'
-                    }`}
-                  >
-                    {demo.role === 'student' && demo.subscriptionStatus === 'active' ? 'Subscriber' : demo.role}
-                  </span>
-                </div>
-                <p className="text-[10px] font-mono text-slate-400 truncate">{demo.email}</p>
-                <p className="text-[9px] text-slate-400 mt-1 line-clamp-1">{demo.description}</p>
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Campus Security Note */}
-        <div className="mt-4 pt-3 border-t border-[#00FF00]/10 text-center">
+        {/* Campus & Global Security Note */}
+        <div className="mt-5 pt-4 border-t border-[#00FF00]/15 text-center">
           <p className="text-[10px] text-slate-400">
-            Protected by SGT University SMCF Radio Cloud Identity. Authorized students, RJs, and faculty only.
+            SMCF Radio 90.4 MHz FM · Open to global listeners. Broadcaster RJ and Admin roles are provisioned exclusively by University Station Direction.
           </p>
         </div>
       </div>

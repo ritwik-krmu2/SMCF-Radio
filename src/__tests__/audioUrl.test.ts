@@ -59,4 +59,22 @@ describe('Audio URL Utilities', () => {
       'https://drive.google.com/file/d/1kxDyeFzjPLU6wgOGdTVQolE-kAPmYl8m/preview'
     );
   });
+
+  it('correctly resolves audio URL when adding a new episode with a new Google Drive link', () => {
+    const newDriveUrl = 'https://drive.google.com/file/d/1xyzNEWupload1234567890abcdef12345/view?usp=sharing';
+    const resolvedUrl = formatAudioUrl(newDriveUrl);
+    expect(resolvedUrl).toBe('/api/drive-stream?id=1xyzNEWupload1234567890abcdef12345');
+
+    const mediaUrl = getMediaAudioUrl({
+      driveUrl: newDriveUrl,
+      audioUrl: '',
+    });
+    expect(mediaUrl).toBe('/api/drive-stream?id=1xyzNEWupload1234567890abcdef12345');
+  });
+
+  it('correctly preserves direct CDN audio URLs for new episodes', () => {
+    const cdnUrl = 'https://cdn.sgtuniversity.org/radio/episodes/guest_talk_2026.mp3';
+    expect(formatAudioUrl(cdnUrl)).toBe(cdnUrl);
+    expect(getMediaAudioUrl({ audioUrl: cdnUrl })).toBe(cdnUrl);
+  });
 });

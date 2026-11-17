@@ -295,7 +295,18 @@ export const StudentPortal: React.FC<StudentPortalProps> = ({
   if (!user) {
     return (
       <section className="w-full min-h-[75vh] flex items-center justify-center p-4 sm:p-8 bg-[#F7F8F5]">
-        <AuthView onSuccess={() => setActiveTab('overview')} />
+        <AuthView
+          onSuccess={(authUser) => {
+            const target = authUser || user;
+            if (target?.role === 'admin') {
+              window.location.hash = '/admin';
+            } else if (target?.role === 'rj') {
+              window.location.hash = '/creator';
+            } else {
+              setActiveTab('overview');
+            }
+          }}
+        />
       </section>
     );
   }

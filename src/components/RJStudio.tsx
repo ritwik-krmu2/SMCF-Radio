@@ -126,7 +126,7 @@ export const RJStudio: React.FC<RJStudioProps> = ({
       ? formatAudioUrl(formData.driveUrl)
       : formData.audioUrl
       ? formatAudioUrl(formData.audioUrl)
-      : '';
+      : '/audio/live_smcf_promo_gulam.mp3';
 
     databaseService.createProgram({
       title: formData.title,
@@ -137,7 +137,7 @@ export const RJStudio: React.FC<RJStudioProps> = ({
       rj: currentUser?.name || 'RJ Priya',
       duration: formData.duration || '15 min',
       featured: false,
-      audioUrl: resolvedAudio,
+      audioUrl: resolvedAudio || '/audio/live_smcf_promo_gulam.mp3',
       driveUrl: formData.driveUrl || undefined,
       status: formData.status,
       submittedBy: currentUser?.id,
@@ -194,12 +194,20 @@ export const RJStudio: React.FC<RJStudioProps> = ({
             This creator workspace is designated for student Radio Jockeys and broadcast team members.
             Please sign in with an RJ account to manage episodes, broadcast schedules, and audio master links.
           </p>
-          <button
-            onClick={onNavigateHome}
-            className="px-6 py-2.5 rounded-xl bg-[#10B981] hover:bg-[#059669] text-white text-xs font-bold cursor-pointer transition-colors"
-          >
-            Return to Public Station
-          </button>
+          <div className="flex justify-center gap-3 pt-2">
+            <button
+              onClick={() => { window.location.hash = '/auth'; }}
+              className="px-6 py-2.5 rounded-xl bg-[#10B981] hover:bg-[#059669] text-white text-xs font-bold cursor-pointer transition-colors"
+            >
+              Sign In with RJ ID
+            </button>
+            <button
+              onClick={onNavigateHome}
+              className="px-6 py-2.5 rounded-xl bg-[#F8F9FA] hover:bg-[#E8EAE2] text-[#202820] text-xs font-bold cursor-pointer transition-colors border border-[#E8EAE2]"
+            >
+              Public Station
+            </button>
+          </div>
         </div>
       </div>
     );

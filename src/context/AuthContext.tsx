@@ -9,8 +9,8 @@ interface AuthContextType {
   isLoading: boolean;
   isDatabaseConfigured: boolean;
   databaseUrl: string;
-  login: (payload: LoginPayload) => Promise<{ success: boolean; error?: string }>;
-  signup: (payload: SignupPayload) => Promise<{ success: boolean; error?: string }>;
+  login: (payload: LoginPayload) => Promise<{ success: boolean; user?: User; error?: string }>;
+  signup: (payload: SignupPayload) => Promise<{ success: boolean; user?: User; error?: string }>;
   logout: () => Promise<void>;
   requestPasswordReset: (email: string) => Promise<{ success: boolean; message: string }>;
 }
@@ -38,12 +38,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
-  const login = async (payload: LoginPayload): Promise<{ success: boolean; error?: string }> => {
+  const login = async (payload: LoginPayload): Promise<{ success: boolean; user?: User; error?: string }> => {
     setIsLoading(true);
     try {
       const res = await authService.login(payload);
       setUser(res.user);
-      return { success: true };
+      return { success: true, user: res.user };
     } catch (err: any) {
       return { success: false, error: err.message || 'Login failed' };
     } finally {
@@ -51,12 +51,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const signup = async (payload: SignupPayload): Promise<{ success: boolean; error?: string }> => {
+  const signup = async (payload: SignupPayload): Promise<{ success: boolean; user?: User; error?: string }> => {
     setIsLoading(true);
     try {
       const res = await authService.signup(payload);
       setUser(res.user);
-      return { success: true };
+      return { success: true, user: res.user };
     } catch (err: any) {
       return { success: false, error: err.message || 'Signup failed' };
     } finally {

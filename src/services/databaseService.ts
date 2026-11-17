@@ -267,11 +267,17 @@ export const databaseService = {
       throw new Error(`An RJ with name "${cleanName}" already exists.`);
     }
 
+    const assignedRjId = (
+      payload.rjId?.trim() ||
+      (payload.alias ? `RJ-${payload.alias.replace(/RJ\s*/i, '').replace(/[^A-Za-z0-9]/g, '').toUpperCase()}` : `RJ-${cleanName.split(' ')[0].toUpperCase()}`)
+    ).toUpperCase();
+
     const newRJ: RJ = {
       ...payload,
       id: `rj_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
       name: cleanName,
       alias: payload.alias?.trim() || cleanName,
+      rjId: assignedRjId,
       dept: payload.dept || 'School of Emerging Media',
       bio: payload.bio || 'Resident RJ broadcaster at SMCF Radio 90.4 MHz.',
       color: payload.color || '#10B981',

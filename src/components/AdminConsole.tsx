@@ -227,11 +227,12 @@ export const AdminConsole: React.FC<AdminConsoleProps> = ({
   const [rjForm, setRjForm] = useState({
     name: '',
     alias: '',
+    rjId: '',
     dept: 'School of Emerging Media',
     bio: '',
     showTime: 'Weekdays 4:00 PM',
     color: '#10B981',
-    password: '',
+    password: 'rj123',
   });
 
   // 3. Subscribers
@@ -419,7 +420,7 @@ export const AdminConsole: React.FC<AdminConsoleProps> = ({
       lang: 'HI',
       rj: uploadRJ,
       duration: uploadDuration || '25 min',
-      audioUrl: finalAudio || 'https://drive.usercontent.google.com/download?id=1xyVbDt044-i6u1ZzugYkQAMB5ezp3g8y&export=download',
+      audioUrl: finalAudio || '/audio/career_talks_disha.mp3',
       driveUrl: uploadDriveUrl.trim() || undefined,
       status: uploadStatus,
       submittedBy: user?.name || 'Station Director',
@@ -448,6 +449,7 @@ export const AdminConsole: React.FC<AdminConsoleProps> = ({
       lang: 'HI',
       rj: newProgRJ,
       duration: '45 min',
+      audioUrl: '/audio/live_smcf_promo_gulam.mp3',
       status: 'published',
       featured: true,
       submittedBy: user?.name || 'Station Director',
@@ -597,23 +599,32 @@ export const AdminConsole: React.FC<AdminConsoleProps> = ({
     e.preventDefault();
     try {
       const cleanAlias = rjForm.alias || `RJ ${rjForm.name.split(' ')[0]}`;
+      const cleanRjId = (
+        rjForm.rjId?.trim() ||
+        `RJ-${cleanAlias.replace(/RJ\s*/i, '').replace(/[^A-Za-z0-9]/g, '').toUpperCase()}`
+      ).toUpperCase();
+      const cleanPassword = rjForm.password?.trim() || 'rj123';
+      const cleanEmail = `${cleanAlias.toLowerCase().replace(/[^a-z0-9]/g, '.')}@smcf.edu.in`;
+
       const newRJ = databaseService.createRJ({
         name: rjForm.name,
         alias: cleanAlias,
+        rjId: cleanRjId,
         dept: rjForm.dept,
         bio: rjForm.bio || `Resident RJ Broadcaster on 90.4 MHz FM.`,
         color: rjForm.color || '#10B981',
-        initials: cleanAlias.slice(0, 2).toUpperCase(),
+        initials: cleanAlias.replace(/RJ\s*/i, '').slice(0, 2).toUpperCase() || cleanAlias.slice(0, 2).toUpperCase(),
         showTime: rjForm.showTime || 'Weekdays 4:00 PM',
         isActive: true,
       });
 
       authService.createRJUser({
         name: rjForm.name,
-        email: `${cleanAlias.toLowerCase().replace(/\s+/g, '.')}@smcf.edu.in`,
+        email: cleanEmail,
+        rjId: cleanRjId,
         department: rjForm.dept,
         bio: rjForm.bio,
-        password: rjForm.password || 'rj123',
+        password: cleanPassword,
       });
 
       setRJs(databaseService.getRJs());
@@ -622,13 +633,14 @@ export const AdminConsole: React.FC<AdminConsoleProps> = ({
       setRjForm({
         name: '',
         alias: '',
+        rjId: '',
         dept: 'School of Emerging Media',
         bio: '',
         showTime: 'Weekdays 4:00 PM',
         color: '#10B981',
-        password: '',
+        password: 'rj123',
       });
-      showNotice(`RJ Broadcaster "${newRJ.alias}" registered successfully.`);
+      showNotice(`RJ Broadcaster "${newRJ.alias}" registered with Official Login RJ ID: ${cleanRjId} (Password: ${cleanPassword}).`);
     } catch (err: any) {
       alert(err.message || 'Failed to register RJ.');
     }
@@ -2767,9 +2779,14 @@ export const AdminConsole: React.FC<AdminConsoleProps> = ({
                           <div>
                             <h4 className="font-bold text-sm text-[#202820]">{rj.alias}</h4>
                             <p className="text-xs text-[#778078]">{rj.name}</p>
-                            <span className="text-[10px] text-[#145A42] font-semibold bg-[#EAF5EC] px-2 py-0.5 rounded-full inline-block mt-1">
-                              {rj.dept}
-                            </span>
+                            <div className="flex items-center gap-1.5 flex-wrap mt-1">
+                              <span className="text-[10px] text-[#145A42] font-semibold bg-[#EAF5EC] px-2 py-0.5 rounded-full inline-block">
+                                {rj.dept}
+                              </span>
+                              <span className="text-[10px] font-mono font-bold text-slate-800 bg-slate-100 px-2 py-0.5 rounded-full border border-slate-200 inline-block" title="Official Login RJ ID">
+                                ID: {rj.rjId || `RJ-${rj.alias.replace(/RJ\s*/i, '').replace(/[^A-Za-z0-9]/g, '').toUpperCase()}`}
+                              </span>
+                            </div>
                           </div>
                         </div>
 
@@ -3429,7 +3446,11 @@ export const AdminConsole: React.FC<AdminConsoleProps> = ({
                       required
                       placeholder="e.g. RJ Ronit"
                       value={rjForm.alias}
-                      onChange={(e) => setRjForm({ ...rjForm, alias: e.target.value })}
+                      onChange={(e) => {
+                        const newAlias = e.target.value;
+                        const suggestedId = newAlias ? `RJ-${newAlias.replace(/RJ\s*/i, '').replace(/[^A-Za-z0-9]/g, '').toUpperCase()}` : '';
+                        setRjForm({ ...rjForm, alias: newAlias, rjId: rjForm.rjId || suggestedId });
+                      }}
                       className="w-full px-3.5 py-2.5 bg-white border border-[#E8EAE2] rounded-xl text-[#202820] font-bold focus:outline-none focus:border-[#10B981]"
                     />
                   </div>
@@ -3441,6 +3462,33 @@ export const AdminConsole: React.FC<AdminConsoleProps> = ({
                       onChange={(e) => setRjForm({ ...rjForm, dept: e.target.value })}
                       className="w-full px-3.5 py-2.5 bg-white border border-[#E8EAE2] rounded-xl text-[#202820] focus:outline-none focus:border-[#10B981]"
                     />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3 p-3.5 rounded-2xl bg-emerald-50/70 border border-[#10B981]/25">
+                  <div>
+                    <label className="block text-[#145A42] font-bold mb-1">Official Login RJ ID *</label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="e.g. RJ-RONIT"
+                      value={rjForm.rjId || (rjForm.alias ? `RJ-${rjForm.alias.replace(/RJ\s*/i, '').replace(/[^A-Za-z0-9]/g, '').toUpperCase()}` : '')}
+                      onChange={(e) => setRjForm({ ...rjForm, rjId: e.target.value.toUpperCase() })}
+                      className="w-full px-3.5 py-2 bg-white border border-[#E8EAE2] rounded-xl text-[#202820] font-mono font-bold focus:outline-none focus:border-[#10B981]"
+                    />
+                    <p className="text-[10px] text-[#145A42] mt-0.5">Used by RJ to log in</p>
+                  </div>
+                  <div>
+                    <label className="block text-[#145A42] font-bold mb-1">Initial Password *</label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="e.g. rj123"
+                      value={rjForm.password}
+                      onChange={(e) => setRjForm({ ...rjForm, password: e.target.value })}
+                      className="w-full px-3.5 py-2 bg-white border border-[#E8EAE2] rounded-xl text-[#202820] font-mono focus:outline-none focus:border-[#10B981]"
+                    />
+                    <p className="text-[10px] text-[#145A42] mt-0.5">Share with the RJ</p>
                   </div>
                 </div>
 
@@ -3520,14 +3568,33 @@ export const AdminConsole: React.FC<AdminConsoleProps> = ({
                   </p>
                 </div>
 
-                <div className="p-3.5 rounded-xl bg-[#EAF5EC] border border-[#10B981]/25 flex items-center justify-between">
-                  <div>
-                    <span className="text-[10px] text-[#145A42] uppercase font-bold block">On-Air Time Slot</span>
-                    <span className="font-bold text-[#145A42]">{viewRJ.showTime || 'Weekdays 4:00 PM'}</span>
+                <div className="p-3.5 rounded-xl bg-amber-50 border border-amber-200 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] text-amber-900 uppercase font-bold flex items-center gap-1.5">
+                      <ShieldCheck className="w-3.5 h-3.5 text-amber-600" />
+                      <span>Official Broadcaster Credentials (Admin Managed)</span>
+                    </span>
+                    <span className="text-[10px] font-bold text-amber-800 bg-amber-100/80 px-2 py-0.5 rounded-full">
+                      RJ Role
+                    </span>
                   </div>
-                  <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-white text-[#10B981]">
-                    90.4 MHz FM
-                  </span>
+                  <div className="grid grid-cols-2 gap-2 text-xs">
+                    <div>
+                      <span className="text-[10px] text-slate-500 block">Login RJ ID:</span>
+                      <span className="font-mono font-bold text-slate-900 bg-white px-2 py-0.5 rounded border border-amber-200 inline-block mt-0.5">
+                        {viewRJ.rjId || `RJ-${viewRJ.alias.replace(/RJ\s*/i, '').replace(/[^A-Za-z0-9]/g, '').toUpperCase()}`}
+                      </span>
+                    </div>
+                    <div>
+                      <span className="text-[10px] text-slate-500 block">Station Portal Access:</span>
+                      <span className="font-semibold text-emerald-700 bg-white px-2 py-0.5 rounded border border-amber-200 inline-block mt-0.5">
+                        RJ Studio Ready
+                      </span>
+                    </div>
+                  </div>
+                  <p className="text-[10px] text-amber-800 leading-normal">
+                    Broadcasters sign in using their designated <strong>RJ ID</strong>. This profile was provisioned by university radio administration.
+                  </p>
                 </div>
               </div>
 

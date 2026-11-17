@@ -26,7 +26,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
             </div>
 
             <p className="text-slate-400 leading-relaxed text-[11px]">
-              The official digital broadcasting and student media platform of the School of Emerging Media, Communication and Film Studies at SGT University.
+              The official digital broadcasting and student media platform of the School of emerging media Communication & Film studies.
             </p>
 
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#00FF00]/10 text-[#00FF00] border border-[#00FF00]/30 text-[10px] font-bold shadow-[0_0_8px_rgba(0,255,0,0.2)]">
@@ -152,7 +152,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
         <div className="mt-12 pt-6 border-t border-[#00FF00]/15 flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] text-slate-400">
           <p>© {new Date().getFullYear()} SMCF Radio · SGT University. All rights reserved.</p>
           <p className="flex items-center gap-1">
-            Engineered with <Heart className="w-3 h-3 text-[#00FF00] fill-[#00FF00]" /> for School of Emerging Media
+            Engineered with <Heart className="w-3 h-3 text-[#00FF00] fill-[#00FF00]" /> for School of emerging media Communication & Film studies
           </p>
         </div>
       </div>

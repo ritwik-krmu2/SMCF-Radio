@@ -278,7 +278,7 @@ export const databaseService = {
       name: cleanName,
       alias: payload.alias?.trim() || cleanName,
       rjId: assignedRjId,
-      dept: payload.dept || 'School of Emerging Media',
+      dept: payload.dept || 'School of emerging media Communication & Film studies',
       bio: payload.bio || 'Resident RJ broadcaster at SMCF Radio 90.4 MHz.',
       color: payload.color || '#10B981',
       initials: payload.initials || cleanName.split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase(),

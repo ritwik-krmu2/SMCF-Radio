@@ -1,5 +1,5 @@
 # SMCF Radio — Digital Campus Broadcasting & Student Media Platform
-**School of Emerging Media, Communication and Film Studies (SMCF) · SGT University**  
+**School of emerging media Communication & Film studies (SMCF)**  
 *Broadcast Frequency: 90.4 MHz Campus FM & 24/7 Digital Stereo Stream*
 
 ---
@@ -134,4 +134,4 @@ SMCF-Radio/
 ---
 
 ## 📜 License
-Developed for SGT University School of Emerging Media, Communication and Film Studies.
+Developed for School of emerging media Communication & Film studies.

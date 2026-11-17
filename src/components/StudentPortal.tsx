@@ -1485,7 +1485,7 @@ export const StudentPortal: React.FC<StudentPortalProps> = ({
                     <h4 className="font-bold text-base text-[#202820]">
                       {user.subscriptionTier === 'vip-pass' ? 'VIP All-Access Pass' : 'Student Campus Free Pass'}
                     </h4>
-                    <p className="text-xs text-[#778078]">Sponsored by School of Emerging Media · SGT University</p>
+                    <p className="text-xs text-[#778078]">Sponsored by School of emerging media Communication & Film studies</p>
                   </div>
                 </div>
 

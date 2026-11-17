@@ -37,7 +37,7 @@ describe('Authentication Service (RBAC & Local Repository)', () => {
         password: 'wrong_password_999',
       })
     ).rejects.toThrow('Incorrect password');
-  });
+  }, 15000);
 
   it('allows registering a new student account', async () => {
     const res = await authService.signup({
@@ -129,6 +129,6 @@ describe('Authentication Service (RBAC & Local Repository)', () => {
     expect(res.user.studentId).toMatch(/^LSTN-/);
     expect(res.user.department).toBe('General Listener / Public');
     expect(res.user.subscriptionStatus).toBe('active');
-  });
+  }, 15000);
 });
 

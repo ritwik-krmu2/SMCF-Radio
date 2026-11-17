@@ -106,7 +106,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 </span>
               </div>
               <p className="text-[10px] text-slate-400 tracking-wide hidden sm:block">
-                School of Emerging Media · SGT University
+                School of emerging media Communication & Film studies
               </p>
             </div>
           </div>

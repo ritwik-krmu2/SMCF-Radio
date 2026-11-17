@@ -670,7 +670,7 @@ export const authService = {
       name: cleanName,
       email: cleanEmail,
       rjId: assignedRjId,
-      department: payload.department || 'School of Emerging Media',
+      department: payload.department || 'School of emerging media Communication & Film studies',
       role: 'rj',
       bio: payload.bio,
       isActive: true,

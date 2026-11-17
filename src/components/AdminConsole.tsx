@@ -228,7 +228,7 @@ export const AdminConsole: React.FC<AdminConsoleProps> = ({
     name: '',
     alias: '',
     rjId: '',
-    dept: 'School of Emerging Media',
+    dept: 'School of emerging media Communication & Film studies',
     bio: '',
     showTime: 'Weekdays 4:00 PM',
     color: '#10B981',
@@ -634,7 +634,7 @@ export const AdminConsole: React.FC<AdminConsoleProps> = ({
         name: '',
         alias: '',
         rjId: '',
-        dept: 'School of Emerging Media',
+        dept: 'School of emerging media Communication & Film studies',
         bio: '',
         showTime: 'Weekdays 4:00 PM',
         color: '#10B981',
@@ -1125,7 +1125,7 @@ export const AdminConsole: React.FC<AdminConsoleProps> = ({
                 <div className="space-y-1">
                   <h3 className="text-xs font-bold text-[#202820]">SMCF Broadcast Central</h3>
                   <p className="text-[11px] text-[#778078] max-w-[170px] leading-relaxed">
-                    SGT University School of Emerging Media 90.4 MHz FM
+                    School of emerging media Communication & Film studies 90.4 MHz FM
                   </p>
                 </div>
                 <BroadcastCentralIllustration className="w-28 h-16 shrink-0" />
@@ -1954,7 +1954,7 @@ export const AdminConsole: React.FC<AdminConsoleProps> = ({
                     </div>
                     <h4 className="font-bold text-base text-[#202820]">{cat.en}</h4>
                     <p className="text-xs text-[#778078] leading-relaxed">
-                      Flagship campus broadcast series hosted weekly by School of Emerging Media broadcasters.
+                      Flagship campus broadcast series hosted weekly by School of emerging media Communication & Film studies broadcasters.
                     </p>
                     <div className="pt-2 border-t border-[#E8EAE2] flex items-center justify-between text-xs">
                       <span className="text-[11px] text-[#10B981] font-bold">{totalPlays.toLocaleString()} total plays</span>
@@ -3078,7 +3078,7 @@ export const AdminConsole: React.FC<AdminConsoleProps> = ({
                 <div>
                   <span className="text-[#778078] block text-[10px] uppercase font-bold">Studio Facility</span>
                   <span className="font-semibold text-[#202820]">
-                    School of Emerging Media, 3rd Floor, SGT University
+                    School of emerging media Communication & Film studies, 3rd Floor
                   </span>
                 </div>
                 <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#F0F2EC] text-[#778078]">

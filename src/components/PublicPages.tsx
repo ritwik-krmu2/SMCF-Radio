@@ -85,7 +85,7 @@ export const LiveRadioView: React.FC<LiveRadioViewProps> = ({
               </h1>
 
               <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
-                Direct audio transmission from the School of Emerging Media studio at SGT University.
+                Direct audio transmission from the School of emerging media Communication & Film studies studio.
                 Currently featuring student journalism, guest masterclasses, and Friday music curations.
               </p>
             </div>
@@ -706,7 +706,7 @@ export const AboutView: React.FC = () => {
           The Voice of <span className="bg-gradient-to-r from-[#00FF00] via-[#4ADE80] to-[#10B981] bg-clip-text text-transparent">Emerging Media</span>
         </h1>
         <p className="text-sm sm:text-base text-slate-300 max-w-2xl mx-auto leading-relaxed">
-          SMCF Radio is the official campus broadcast station of the School of Emerging Media, Communication and Film Studies at SGT University.
+          SMCF Radio is the official campus broadcast station of the School of emerging media Communication & Film studies.
         </p>
       </div>
 

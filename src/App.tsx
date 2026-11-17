@@ -410,7 +410,7 @@ export default function App() {
 
                     <p className="text-slate-300 text-xs sm:text-base lg:text-lg leading-relaxed max-w-xl font-normal">
                       Discover the sounds, stories and people that bring our campus together.
-                      Curated by students of the School of Emerging Media at SGT University.
+                      Curated by students of the School of emerging media Communication & Film studies.
                     </p>
 
                     <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3.5 pt-1">

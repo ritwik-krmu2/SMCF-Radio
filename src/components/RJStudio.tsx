@@ -126,7 +126,7 @@ export const RJStudio: React.FC<RJStudioProps> = ({
       ? formatAudioUrl(formData.driveUrl)
       : formData.audioUrl
       ? formatAudioUrl(formData.audioUrl)
-      : '';
+      : '/audio/live_smcf_promo_gulam.mp3';
 
     databaseService.createProgram({
       title: formData.title,
@@ -137,7 +137,7 @@ export const RJStudio: React.FC<RJStudioProps> = ({
       rj: currentUser?.name || 'RJ Priya',
       duration: formData.duration || '15 min',
       featured: false,
-      audioUrl: resolvedAudio,
+      audioUrl: resolvedAudio || '/audio/live_smcf_promo_gulam.mp3',
       driveUrl: formData.driveUrl || undefined,
       status: formData.status,
       submittedBy: currentUser?.id,

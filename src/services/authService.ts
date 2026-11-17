@@ -14,8 +14,8 @@ const SEED_USERS: Array<User & { passwordHash: string }> = [
     id: 'usr_student_01',
     name: 'Priya Sharma (Student)',
     email: 'student@smcf.edu.in',
-    department: 'Computer Science',
-    studentId: '2024-CSE-042',
+    department: 'School of emerging media Communication & Film studies',
+    studentId: '2024-MED-015',
     role: 'student',
     subscriptionStatus: 'not_subscribed',
     subscriptionTier: 'campus-free',
@@ -26,7 +26,7 @@ const SEED_USERS: Array<User & { passwordHash: string }> = [
     id: 'usr_student_02',
     name: 'Rahul Mehta (Subscriber)',
     email: 'rahul@smcf.edu.in',
-    department: 'Humanities',
+    department: 'Humanities & Social Sciences',
     studentId: '2024-HUM-018',
     role: 'student',
     subscriptionStatus: 'active',
@@ -36,10 +36,83 @@ const SEED_USERS: Array<User & { passwordHash: string }> = [
     passwordHash: 'rahul123',
   },
   {
+    id: 'usr_student_03',
+    name: 'Aarav Sharma',
+    email: 'aarav@smcf.edu.in',
+    department: 'Computer Science & Engineering',
+    studentId: '2024-CSE-012',
+    role: 'student',
+    subscriptionStatus: 'active',
+    subscriptionTier: 'campus-free',
+    createdAt: '2024-09-06T10:00:00.000Z',
+    passwordHash: 'student123',
+  },
+  {
+    id: 'usr_student_04',
+    name: 'Simran Kaur',
+    email: 'simran@smcf.edu.in',
+    department: 'Film Studies & Production',
+    studentId: '2024-FLM-044',
+    role: 'student',
+    subscriptionStatus: 'active',
+    subscriptionTier: 'campus-free',
+    createdAt: '2024-09-07T11:00:00.000Z',
+    passwordHash: 'student123',
+  },
+  {
+    id: 'usr_student_05',
+    name: 'Rohan Verma',
+    email: 'rohan@smcf.edu.in',
+    department: 'School of emerging media Communication & Film studies',
+    studentId: '2023-EM-029',
+    role: 'student',
+    subscriptionStatus: 'active',
+    subscriptionTier: 'campus-free',
+    createdAt: '2024-09-08T12:00:00.000Z',
+    passwordHash: 'student123',
+  },
+  {
+    id: 'usr_student_06',
+    name: 'Ananya Gupta',
+    email: 'ananya@smcf.edu.in',
+    department: 'Management & Commerce',
+    studentId: '2024-MGT-018',
+    role: 'student',
+    subscriptionStatus: 'active',
+    subscriptionTier: 'campus-free',
+    createdAt: '2024-09-09T14:00:00.000Z',
+    passwordHash: 'student123',
+  },
+  {
+    id: 'usr_student_07',
+    name: 'Kavya Patel',
+    email: 'kavya@smcf.edu.in',
+    department: 'Languages & Humanities',
+    studentId: '2024-HUM-031',
+    role: 'student',
+    subscriptionStatus: 'active',
+    subscriptionTier: 'campus-free',
+    createdAt: '2024-09-10T15:00:00.000Z',
+    passwordHash: 'student123',
+  },
+  {
+    id: 'usr_rj_00',
+    name: 'Gulam & Priya (RJ Gulam & Priya)',
+    email: 'rj.gulam@smcf.edu.in',
+    department: 'Station Broadcast & Studio Ops',
+    studentId: '2023-SBS-001',
+    rjId: 'RJ-GULAM-PRIYA',
+    role: 'rj',
+    subscriptionStatus: 'active',
+    subscriptionTier: 'vip-pass',
+    createdAt: '2024-08-05T08:00:00.000Z',
+    passwordHash: 'rj123',
+  },
+  {
     id: 'usr_rj_01',
     name: 'Ronit Kumar (RJ Ronit)',
     email: 'rj.ronit@smcf.edu.in',
-    department: 'Film Studies',
+    department: 'Film Studies & Production',
     studentId: '2023-FLM-011',
     rjId: 'RJ-RONIT',
     role: 'rj',
@@ -52,7 +125,7 @@ const SEED_USERS: Array<User & { passwordHash: string }> = [
     id: 'usr_rj_02',
     name: 'Diva Saxena (RJ Diva)',
     email: 'rj.diva@smcf.edu.in',
-    department: 'Training & Skill Dev',
+    department: 'Languages & Skill Development',
     studentId: '2023-TSD-004',
     rjId: 'RJ-DIVA',
     role: 'rj',
@@ -65,7 +138,7 @@ const SEED_USERS: Array<User & { passwordHash: string }> = [
     id: 'usr_rj_03',
     name: 'Priya Sharma (RJ Priya)',
     email: 'rj.priya@smcf.edu.in',
-    department: 'Station Broadcast',
+    department: 'Station Broadcast & Studio Ops',
     studentId: '2024-CSE-042',
     rjId: 'RJ-PRIYA',
     role: 'rj',
@@ -114,6 +187,32 @@ const SEED_USERS: Array<User & { passwordHash: string }> = [
     passwordHash: 'rj123',
   },
   {
+    id: 'usr_rj_07',
+    name: 'Anjali & Laxita (RJ Anjali & Laxita)',
+    email: 'rj.anjali@smcf.edu.in',
+    department: 'Media & Mass Communication',
+    studentId: '2023-MMC-014',
+    rjId: 'RJ-ANJALI-LAXITA',
+    role: 'rj',
+    subscriptionStatus: 'active',
+    subscriptionTier: 'vip-pass',
+    createdAt: '2024-08-19T09:00:00.000Z',
+    passwordHash: 'rj123',
+  },
+  {
+    id: 'usr_rj_08',
+    name: 'Laxita Rao (RJ Laxita)',
+    email: 'rj.laxita@smcf.edu.in',
+    department: 'Media & Mass Communication',
+    studentId: '2023-MMC-015',
+    rjId: 'RJ-LAXITA',
+    role: 'rj',
+    subscriptionStatus: 'active',
+    subscriptionTier: 'vip-pass',
+    createdAt: '2024-08-19T09:30:00.000Z',
+    passwordHash: 'rj123',
+  },
+  {
     id: 'usr_admin_01',
     name: 'Station Director (Admin)',
     email: 'admin@smcf.edu.in',
@@ -131,13 +230,25 @@ function getLocalUsers(): Array<User & { passwordHash: string }> {
   try {
     const raw = localStorage.getItem(LOCAL_STORAGE_USERS_KEY);
     if (!raw) {
-      localStorage.setItem(LOCAL_STORAGE_USERS_KEY, JSON.stringify(SEED_USERS));
-      return SEED_USERS;
+      const initial: Array<User & { passwordHash: string }> = JSON.parse(JSON.stringify(SEED_USERS));
+      localStorage.setItem(LOCAL_STORAGE_USERS_KEY, JSON.stringify(initial));
+      return initial;
     }
-    return JSON.parse(raw);
+    const stored: Array<User & { passwordHash: string }> = JSON.parse(raw);
+    let updated = false;
+    for (const seed of SEED_USERS) {
+      if (!stored.some((u) => u.email.toLowerCase() === seed.email.toLowerCase() || (seed.rjId && u.rjId === seed.rjId))) {
+        stored.push({ ...seed });
+        updated = true;
+      }
+    }
+    if (updated) {
+      localStorage.setItem(LOCAL_STORAGE_USERS_KEY, JSON.stringify(stored));
+    }
+    return stored;
   } catch (err) {
     console.warn('Failed reading users from localStorage, returning seed accounts:', err);
-    return SEED_USERS;
+    return JSON.parse(JSON.stringify(SEED_USERS));
   }
 }
 

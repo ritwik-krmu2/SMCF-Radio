@@ -113,5 +113,22 @@ describe('Authentication Service (RBAC & Local Repository)', () => {
     expect(loginRes.user.rjId).toBe('RJ-ARJUN');
     expect(loginRes.user.role).toBe('rj');
   });
+
+  it('allows open public listener signup with personal email (e.g. gmail.com) and no student ID', async () => {
+    const res = await authService.signup({
+      name: 'Maya Lin',
+      email: 'mayalin.radiofan@gmail.com',
+      password: 'mypassword123',
+      department: 'General Listener / Public',
+      role: 'student',
+      activateSubscription: true,
+    });
+
+    expect(res.user).toBeDefined();
+    expect(res.user.email).toBe('mayalin.radiofan@gmail.com');
+    expect(res.user.studentId).toMatch(/^LSTN-/);
+    expect(res.user.department).toBe('General Listener / Public');
+    expect(res.user.subscriptionStatus).toBe('active');
+  });
 });
 

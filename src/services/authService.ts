@@ -379,12 +379,15 @@ export const authService = {
     }
 
     if (!cleanEmail || !cleanEmail.includes('@') || !cleanEmail.includes('.')) {
-      throw new Error('Please enter a valid email address.');
+      throw new Error('Please enter a valid email address (e.g. name@gmail.com).');
     }
 
     if (!payload.password || payload.password.length < 6) {
       throw new Error('Password must be at least 6 characters long.');
     }
+
+    const assignedDept = payload.department?.trim() || 'General Public / Community Listener';
+    const assignedStudentId = payload.studentId?.trim() || `LSTN-${Math.floor(10000 + Math.random() * 90000)}`;
 
     // 1. Supabase Auth if configured
     if (supabase) {
@@ -395,8 +398,8 @@ export const authService = {
           options: {
             data: {
               name: cleanName,
-              department: payload.department,
-              studentId: payload.studentId || `STU-${Math.floor(1000 + Math.random() * 9000)}`,
+              department: assignedDept,
+              studentId: assignedStudentId,
               role: payload.role || 'student',
             },
           },
@@ -409,8 +412,8 @@ export const authService = {
             id: data.user.id,
             name: cleanName,
             email: cleanEmail,
-            department: payload.department || 'Computer Science',
-            studentId: payload.studentId || `STU-${Math.floor(1000 + Math.random() * 9000)}`,
+            department: assignedDept,
+            studentId: assignedStudentId,
             role: payload.role || 'student',
             subscriptionStatus: payload.activateSubscription ? 'active' : 'not_subscribed',
             subscriptionTier: 'campus-free',
@@ -455,12 +458,15 @@ export const authService = {
       throw new Error(`An account with email ${cleanEmail} already exists. Please sign in instead.`);
     }
 
+    const assignedDept = payload.department?.trim() || 'General Public / Community Listener';
+    const assignedStudentId = payload.studentId?.trim() || `LSTN-${Math.floor(10000 + Math.random() * 90000)}`;
+
     const newUser: User & { passwordHash: string } = {
       id: `usr_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
       name: cleanName,
       email: cleanEmail,
-      department: payload.department || 'Computer Science',
-      studentId: payload.studentId || `STU-${Math.floor(1000 + Math.random() * 9000)}`,
+      department: assignedDept,
+      studentId: assignedStudentId,
       role: payload.role || 'student',
       subscriptionStatus: payload.activateSubscription ? 'active' : 'not_subscribed',
       subscriptionTier: 'campus-free',

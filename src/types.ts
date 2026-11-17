@@ -14,6 +14,7 @@ export interface RJ {
   id?: string;
   name: string;
   alias: string;
+  rjId?: string;
   dept: string;
   bio: string;
   color: string;
@@ -111,6 +112,7 @@ export interface User {
   email: string;
   department: string;
   studentId?: string;
+  rjId?: string;
   role: UserRole;
   avatarUrl?: string;
   bio?: string;

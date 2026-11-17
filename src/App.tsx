@@ -904,7 +904,18 @@ export default function App() {
           {/* ======================================================= */}
           {currentPage === 'auth' && (
             <div className="py-8 flex items-center justify-center">
-              <AuthView onSuccess={() => navigateTo('portal')} />
+              <AuthView
+                onSuccess={(authUser) => {
+                  const targetUser = authUser || user || authService.getCurrentUser();
+                  if (targetUser?.role === 'admin') {
+                    navigateTo('admin');
+                  } else if (targetUser?.role === 'rj') {
+                    navigateTo('creator');
+                  } else {
+                    navigateTo('portal');
+                  }
+                }}
+              />
             </div>
           )}
         </AnimatePresence>

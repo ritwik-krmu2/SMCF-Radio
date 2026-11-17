@@ -41,6 +41,7 @@ const SEED_USERS: Array<User & { passwordHash: string }> = [
     email: 'rj.ronit@smcf.edu.in',
     department: 'Film Studies',
     studentId: '2023-FLM-011',
+    rjId: 'RJ-RONIT',
     role: 'rj',
     subscriptionStatus: 'active',
     subscriptionTier: 'vip-pass',
@@ -53,10 +54,63 @@ const SEED_USERS: Array<User & { passwordHash: string }> = [
     email: 'rj.diva@smcf.edu.in',
     department: 'Training & Skill Dev',
     studentId: '2023-TSD-004',
+    rjId: 'RJ-DIVA',
     role: 'rj',
     subscriptionStatus: 'active',
     subscriptionTier: 'vip-pass',
     createdAt: '2024-08-16T11:00:00.000Z',
+    passwordHash: 'rj123',
+  },
+  {
+    id: 'usr_rj_03',
+    name: 'Priya Sharma (RJ Priya)',
+    email: 'rj.priya@smcf.edu.in',
+    department: 'Station Broadcast',
+    studentId: '2024-CSE-042',
+    rjId: 'RJ-PRIYA',
+    role: 'rj',
+    subscriptionStatus: 'active',
+    subscriptionTier: 'vip-pass',
+    createdAt: '2024-08-10T09:00:00.000Z',
+    passwordHash: 'rj123',
+  },
+  {
+    id: 'usr_rj_04',
+    name: 'Disha Verma (RJ Disha)',
+    email: 'rj.disha@smcf.edu.in',
+    department: 'Visual Arts & Photography',
+    studentId: '2023-VAP-019',
+    rjId: 'RJ-DISHA',
+    role: 'rj',
+    subscriptionStatus: 'active',
+    subscriptionTier: 'vip-pass',
+    createdAt: '2024-08-12T10:00:00.000Z',
+    passwordHash: 'rj123',
+  },
+  {
+    id: 'usr_rj_05',
+    name: 'Shipra Singh (RJ Shipra)',
+    email: 'rj.shipra@smcf.edu.in',
+    department: 'Physical Education & Music',
+    studentId: '2023-PEM-008',
+    rjId: 'RJ-SHIPRA',
+    role: 'rj',
+    subscriptionStatus: 'active',
+    subscriptionTier: 'vip-pass',
+    createdAt: '2024-08-14T11:00:00.000Z',
+    passwordHash: 'rj123',
+  },
+  {
+    id: 'usr_rj_06',
+    name: 'Sadiya Khan (RJ Sadiya)',
+    email: 'rj.sadiya@smcf.edu.in',
+    department: 'Corporate Relations & Placement',
+    studentId: '2023-CRP-022',
+    rjId: 'RJ-SADIYA',
+    role: 'rj',
+    subscriptionStatus: 'active',
+    subscriptionTier: 'vip-pass',
+    createdAt: '2024-08-18T14:00:00.000Z',
     passwordHash: 'rj123',
   },
   {
@@ -125,14 +179,39 @@ export const DEMO_CREDENTIALS = [
   },
   {
     role: 'rj' as UserRole,
-    roleTitle: 'RJ Broadcaster (Creator)',
+    roleTitle: 'RJ Broadcaster (RJ Priya)',
     email: 'rj.priya@smcf.edu.in',
+    rjId: 'RJ-PRIYA',
     password: 'rj123',
     name: 'Priya Sharma (RJ Priya)',
-    dept: 'Computer Science',
+    dept: 'Station Broadcast',
     studentId: '2024-CSE-042',
     subscriptionStatus: 'active' as const,
     description: 'Creator access: upload master episodes and modify own shows.',
+  },
+  {
+    role: 'rj' as UserRole,
+    roleTitle: 'RJ Broadcaster (RJ Ronit)',
+    email: 'rj.ronit@smcf.edu.in',
+    rjId: 'RJ-RONIT',
+    password: 'rj123',
+    name: 'Ronit Kumar (RJ Ronit)',
+    dept: 'Film Studies',
+    studentId: '2023-FLM-011',
+    subscriptionStatus: 'active' as const,
+    description: 'Creator access: film review broadcaster and podcast curator.',
+  },
+  {
+    role: 'rj' as UserRole,
+    roleTitle: 'RJ Broadcaster (RJ Diva)',
+    email: 'rj.diva@smcf.edu.in',
+    rjId: 'RJ-DIVA',
+    password: 'rj123',
+    name: 'Diva Saxena (RJ Diva)',
+    dept: 'Training & Skill Dev',
+    studentId: '2023-TSD-004',
+    subscriptionStatus: 'active' as const,
+    description: 'Creator access: personality development and French language shows.',
   },
   {
     role: 'student' as UserRole,
@@ -168,11 +247,17 @@ export const authService = {
   },
 
   async login({ email, password, role }: LoginPayload): Promise<AuthResponse> {
-    const cleanEmail = email.trim().toLowerCase();
+    const rawIdentifier = email.trim();
+    const cleanId = rawIdentifier.toLowerCase();
+    const cleanNoHyphens = cleanId.replace(/[-_ ]/g, '');
 
-    // 1. Instant check for designated demo credentials
+    // 1. Instant check for designated demo credentials (email OR rjId OR studentId)
     const demo = DEMO_CREDENTIALS.find(
-      (d) => d.email.toLowerCase() === cleanEmail && d.password === password
+      (d) =>
+        (d.email.toLowerCase() === cleanId ||
+          (d.rjId && (d.rjId.toLowerCase() === cleanId || d.rjId.toLowerCase().replace(/[-_ ]/g, '') === cleanNoHyphens)) ||
+          (d.studentId && d.studentId.toLowerCase() === cleanId)) &&
+        d.password === password
     );
 
     if (demo) {
@@ -186,6 +271,7 @@ export const authService = {
         email: demo.email,
         department: demo.dept,
         studentId: demo.studentId,
+        rjId: demo.rjId,
         role: demo.role,
         subscriptionStatus: demo.subscriptionStatus,
         subscriptionTier: 'campus-free',
@@ -200,11 +286,11 @@ export const authService = {
       };
     }
 
-    // 2. Supabase Auth if client is configured
-    if (supabase) {
+    // 2. Supabase Auth if client is configured and input contains an email address
+    if (supabase && cleanId.includes('@')) {
       try {
         const { data, error } = await supabase.auth.signInWithPassword({
-          email: cleanEmail,
+          email: cleanId,
           password,
         });
 
@@ -221,9 +307,10 @@ export const authService = {
           const userObj: User = {
             id: data.user.id,
             name: profile?.name || data.user.user_metadata?.name || data.user.email?.split('@')[0] || 'Broadcaster',
-            email: data.user.email || cleanEmail,
+            email: data.user.email || cleanId,
             department: profile?.department || data.user.user_metadata?.department || 'Media Studies',
             studentId: profile?.student_id || data.user.user_metadata?.studentId || '',
+            rjId: profile?.rj_id || data.user.user_metadata?.rjId,
             role: (profile?.role as UserRole) || (data.user.user_metadata?.role as UserRole) || role || 'student',
             createdAt: profile?.created_at || new Date().toISOString(),
           };
@@ -233,21 +320,36 @@ export const authService = {
         }
       } catch (err: any) {
         if ((import.meta as any).env?.MODE === 'test') {
-          return this.localLoginFallback(cleanEmail, password, role);
+          return this.localLoginFallback(rawIdentifier, password, role);
         }
         throw new Error(err.message || 'Authentication failed. Please verify your credentials.');
       }
     }
 
-    return this.localLoginFallback(cleanEmail, password, role);
+    return this.localLoginFallback(rawIdentifier, password, role);
   },
 
-  localLoginFallback(cleanEmail: string, password: string, role?: UserRole): Promise<AuthResponse> {
+  localLoginFallback(identifier: string, password: string, role?: UserRole): Promise<AuthResponse> {
+    const cleanId = identifier.trim().toLowerCase();
+    const cleanNoHyphens = cleanId.replace(/[-_ ]/g, '');
     const users = getLocalUsers();
-    const existing = users.find((u) => u.email.toLowerCase() === cleanEmail);
+
+    const existing = users.find((u) => {
+      const emailMatch = u.email.toLowerCase() === cleanId;
+      const rjIdMatch = u.rjId && (
+        u.rjId.toLowerCase() === cleanId ||
+        u.rjId.toLowerCase().replace(/[-_ ]/g, '') === cleanNoHyphens
+      );
+      const studentIdMatch = u.studentId && u.studentId.toLowerCase() === cleanId;
+      const rjNameMatch = u.role === 'rj' && (
+        u.name.toLowerCase().includes(cleanId) ||
+        u.name.toLowerCase().replace(/[-_ ]/g, '') === cleanNoHyphens
+      );
+      return emailMatch || rjIdMatch || studentIdMatch || rjNameMatch;
+    });
 
     if (!existing) {
-      throw new Error(`No account found registered with ${cleanEmail}. Please sign up first.`);
+      throw new Error(`No account found registered with "${identifier}". Please verify your Email or RJ ID.`);
     }
 
     if (existing.passwordHash !== password) {
@@ -506,6 +608,7 @@ export const authService = {
   createRJUser(payload: {
     name: string;
     email: string;
+    rjId?: string;
     department: string;
     bio?: string;
     password?: string;
@@ -518,10 +621,19 @@ export const authService = {
       throw new Error(`An account with email ${cleanEmail} already exists.`);
     }
 
+    const assignedRjId = (
+      payload.rjId?.trim() || `RJ-${cleanName.replace(/RJ\s*/i, '').replace(/[^A-Za-z0-9]/g, '').toUpperCase()}`
+    ).toUpperCase();
+
+    if (users.some((u) => u.rjId && u.rjId.toUpperCase() === assignedRjId)) {
+      throw new Error(`An RJ account with ID "${assignedRjId}" already exists.`);
+    }
+
     const newUser: User & { passwordHash: string } = {
       id: `usr_rj_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
       name: cleanName,
       email: cleanEmail,
+      rjId: assignedRjId,
       department: payload.department || 'School of Emerging Media',
       role: 'rj',
       bio: payload.bio,
@@ -542,6 +654,7 @@ export const authService = {
         email: newUser.email,
         department: newUser.department,
         role: newUser.role,
+        rj_id: assignedRjId,
       }).then(() => {});
     }
 

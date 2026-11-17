@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { Eye, EyeOff, Lock, Mail, Radio, AlertCircle, CheckCircle2, ArrowRight, ShieldCheck, UserCheck, Sparkles } from 'lucide-react';
+import { Eye, EyeOff, Lock, Mail, Radio, AlertCircle, CheckCircle2, ArrowRight, ShieldCheck, UserCheck, Sparkles, Key } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { DEMO_CREDENTIALS } from '../services/authService';
+import { User } from '../types';
 
 interface AuthViewProps {
-  onSuccess?: () => void;
+  onSuccess?: (user?: User) => void;
   defaultTab?: 'login' | 'signup';
 }
 
@@ -57,9 +58,14 @@ export function AuthView({ onSuccess, defaultTab = 'login' }: AuthViewProps) {
     setIsSubmitting(false);
 
     if (result.success) {
-      setSuccessMsg('Welcome back! Loading your dashboard...');
+      const destination = result.user?.role === 'admin'
+        ? 'Admin Console'
+        : result.user?.role === 'rj'
+        ? 'RJ Studio'
+        : 'Student Portal';
+      setSuccessMsg(`Welcome back, ${result.user?.name || 'Broadcaster'}! Loading your ${destination}...`);
       setTimeout(() => {
-        if (onSuccess) onSuccess();
+        if (onSuccess) onSuccess(result.user);
       }, 500);
     } else {
       setError(result.error || 'Invalid credentials.');
@@ -104,9 +110,9 @@ export function AuthView({ onSuccess, defaultTab = 'login' }: AuthViewProps) {
     setIsSubmitting(false);
 
     if (result.success) {
-      setSuccessMsg('Account created successfully! Welcome to SMCF Radio.');
+      setSuccessMsg('Student account created successfully! Welcome to SMCF Radio.');
       setTimeout(() => {
-        if (onSuccess) onSuccess();
+        if (onSuccess) onSuccess(result.user);
       }, 500);
     } else {
       setError(result.error || 'Failed to create account.');
@@ -215,18 +221,25 @@ export function AuthView({ onSuccess, defaultTab = 'login' }: AuthViewProps) {
         {tab === 'login' && !showForgotPrompt && (
           <form onSubmit={handleLoginSubmit} className="space-y-4 text-xs">
             <div>
-              <label className="block text-slate-200 font-semibold mb-1">Email Address</label>
+              <div className="flex items-center justify-between mb-1">
+                <label className="block text-slate-200 font-semibold">Email Address or RJ ID</label>
+                <span className="text-[10px] text-[#00FF00]/80 font-mono">RJ ID Supported</span>
+              </div>
               <div className="relative">
                 <Mail className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
                 <input
-                  type="email"
+                  type="text"
                   required
-                  placeholder="student@smcf.edu.in"
+                  autoComplete="username"
+                  placeholder="e.g. admin@smcf.edu.in, student@smcf.edu.in or RJ-RONIT"
                   value={loginEmail}
                   onChange={(e) => setLoginEmail(e.target.value)}
                   className="w-full pl-10 pr-4 py-2.5 rounded-2xl bg-[#060E06] border border-[#00FF00]/25 text-white placeholder-slate-400 focus:outline-none focus:border-[#00FF00]"
                 />
               </div>
+              <p className="text-[10px] text-slate-400 mt-1">
+                Broadcasters can log in using their official <strong>RJ ID</strong> provisioned by the Station Director.
+              </p>
             </div>
 
             <div>
@@ -307,6 +320,14 @@ export function AuthView({ onSuccess, defaultTab = 'login' }: AuthViewProps) {
         {/* SIGN UP FORM */}
         {tab === 'signup' && (
           <form onSubmit={handleSignupSubmit} className="space-y-3.5 text-xs">
+            <div className="p-3 rounded-2xl bg-[#060E06] border border-[#00FF00]/20 flex items-start gap-2.5">
+              <ShieldCheck className="w-4 h-4 text-[#00FF00] shrink-0 mt-0.5" />
+              <div className="text-[11px] text-slate-300 leading-normal">
+                <span className="font-bold text-white block">Student Listener Registration</span>
+                Broadcaster (RJ) and Admin accounts are provisioned exclusively by the Station Director.
+              </div>
+            </div>
+
             <div>
               <label className="block text-slate-200 font-semibold mb-1">Full Name *</label>
               <input

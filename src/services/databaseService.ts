@@ -163,7 +163,7 @@ export const databaseService = {
 
     // Asynchronously push to Supabase if configured
     if (supabase) {
-      safeCloudExec(
+      Promise.resolve(
         supabase
           .from('programs')
           .insert({
@@ -182,7 +182,44 @@ export const databaseService = {
             status: newProgram.status,
             submitted_by: newProgram.submittedBy,
           })
-      );
+      )
+        .then((res: any) => {
+          if (res?.error) {
+            console.warn('[Supabase Cloud Sync Warning]:', res.error.message);
+            // If primary key collision, retry with timestamp-based unique ID
+            if (res.error.code === '23505') {
+              const fallbackId = Date.now();
+              newProgram.id = fallbackId;
+              Promise.resolve(
+                supabase
+                  ?.from('programs')
+                  .insert({
+                    id: fallbackId,
+                    title: newProgram.title,
+                    title_hi: newProgram.titleHi,
+                    description: newProgram.desc,
+                    category: newProgram.cat,
+                    language: newProgram.lang,
+                    rj: newProgram.rj,
+                    plays: newProgram.plays,
+                    duration: newProgram.duration,
+                    featured: newProgram.featured,
+                    audio_url: newProgram.audioUrl,
+                    drive_url: newProgram.driveUrl,
+                    status: newProgram.status,
+                    submitted_by: newProgram.submittedBy,
+                  })
+              ).then(() => {
+                this.syncFromSupabase();
+              });
+            }
+          } else {
+            this.syncFromSupabase();
+          }
+        })
+        .catch((err: any) => {
+          console.warn('[Supabase Program Insert Error]:', err);
+        });
     }
 
     notifyListeners();
@@ -1165,6 +1202,34 @@ export const databaseService = {
             createdAt: p.created_at,
           };
         });
+        // Merge any locally created programs not yet in cloud and push them up
+        const localPrograms = getFromStorage<Program[]>(STORAGE_KEYS.PROGRAMS, PROGRAMS);
+        for (const localProg of localPrograms) {
+          if (!mappedPrograms.some((mp) => mp.id === localProg.id || mp.title === localProg.title)) {
+            mappedPrograms.unshift(localProg);
+            if (supabase) {
+              supabase
+                .from('programs')
+                .insert({
+                  id: localProg.id,
+                  title: localProg.title,
+                  title_hi: localProg.titleHi,
+                  description: localProg.desc,
+                  category: localProg.cat,
+                  language: localProg.lang,
+                  rj: localProg.rj,
+                  plays: localProg.plays || 0,
+                  duration: localProg.duration || '15 min',
+                  featured: Boolean(localProg.featured),
+                  audio_url: localProg.audioUrl,
+                  drive_url: localProg.driveUrl,
+                  status: localProg.status || 'published',
+                  submitted_by: localProg.submittedBy,
+                })
+                .then(() => {});
+            }
+          }
+        }
         saveToStorage(STORAGE_KEYS.PROGRAMS, mappedPrograms);
       }
 

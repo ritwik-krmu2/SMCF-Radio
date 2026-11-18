@@ -166,9 +166,30 @@ export default function App() {
       setSchedule(databaseService.getSchedule());
       setAnnouncements(databaseService.getAnnouncements());
     });
+
+    // Cross-device sync on tab focus or visibility change (e.g. waking laptop or switching tabs)
+    const handleSync = () => {
+      databaseService.syncFromSupabase();
+    };
+    window.addEventListener('focus', handleSync);
+    const handleVisibility = () => {
+      if (document.visibilityState === 'visible') {
+        databaseService.syncFromSupabase();
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibility);
+
+    // Periodic cloud poll every 10 seconds for seamless multi-device updates
+    const pollInterval = setInterval(() => {
+      databaseService.syncFromSupabase();
+    }, 10000);
+
     return () => {
       unsub();
       if (unsubRealtime) unsubRealtime();
+      window.removeEventListener('focus', handleSync);
+      document.removeEventListener('visibilitychange', handleVisibility);
+      clearInterval(pollInterval);
     };
   }, []);
 
